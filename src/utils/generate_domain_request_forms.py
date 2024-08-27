@@ -1,18 +1,26 @@
 import argparse
 import requests
 from docx import Document
-from docx.shared import Pt, Inches
-from docx.oxml import OxmlElement
+from docx.shared import Pt, Inches, RGBColor
+from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import qn
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.enum.section import WD_SECTION
-from docx.oxml import parse_xml
-from docx.shared import RGBColor
-from docx2pdf import convert
 import os
 from datetime import datetime
 from dotenv import load_dotenv
 import sys
+import subprocess
+
+def print_and_log(message):
+    print(message)
+    sys.stdout.flush()
+
+def convert_to_pdf(docx_path, pdf_path):
+    try:
+        subprocess.run(['libreoffice', '--headless', '--convert-to', 'pdf', '--outdir', os.path.dirname(pdf_path), docx_path], check=True)
+    except subprocess.CalledProcessError as e:
+        print_and_log(f"Failed to convert {docx_path} to PDF: {e}")
+        sys.exit(1)
 
 # Load environment variables from .env file
 load_dotenv()
@@ -25,9 +33,14 @@ args = parser.parse_args()
 request_token = args.token
 
 # Fetch data from the API
-url = f"{gov_lk_host}/api/request/get-summary?requestToken={request_token}"
-response = requests.get(url)
-data = response.json()['data']
+try:
+    url = f"{gov_lk_host}/api/request/get-summary?requestToken={request_token}"
+    response = requests.get(url)
+    response.raise_for_status()  # Check for HTTP errors
+    data = response.json()['data']
+except requests.exceptions.RequestException as e:
+    print_and_log(f"Failed to fetch data from API: {e}")
+    sys.exit(1)
 
 # Extract the necessary information
 request_id = data["request_id"]
@@ -48,7 +61,11 @@ domains_list = ', '.join([domain['fqdn'] for domain in requested_domains])
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
 media_root = os.path.join(project_root, 'public/media/domain-request/forms/')
 if not os.path.exists(media_root):
-    os.makedirs(media_root)
+    try:
+        os.makedirs(media_root)
+    except Exception as e:
+        print_and_log(f"Failed to create media directory: {e}")
+        sys.exit(1)
 
 # Create the Request Form Document
 doc = Document()
@@ -67,36 +84,6 @@ for section in sections:
     footer_text = footer.add_run(f"Request Token: {request_token} | Document Version: 2.1")
     footer_text.font.size = Pt(9)
     footer_text.font.color.rgb = RGBColor(0, 0, 0)
-
-    # Add footer for page numbers, aligned to the right
-    page_footer = section.footer.add_paragraph()
-    page_footer.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
-    page_footer_run = page_footer.add_run("Page ")
-    page_footer_run.font.size = Pt(9)
-    page_footer_run.font.color.rgb = RGBColor(0, 0, 0)
-    page_footer_run.bold = True
-
-    # Add the PAGE field
-    fldStart = '<w:fldSimple w:instr="PAGE" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
-    run = page_footer.add_run()
-    run._r.append(parse_xml(fldStart))
-    run.font.size = Pt(9)
-    run.font.color.rgb = RGBColor(0, 0, 0)
-    run.bold = True
-
-    # Add " of "
-    of_run = page_footer.add_run(' of ')
-    of_run.font.size = Pt(9)
-    of_run.font.color.rgb = RGBColor(0, 0, 0)
-    of_run.bold = True
-
-    # Add the NUMPAGES field
-    fldStart = '<w:fldSimple w:instr="NUMPAGES" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
-    run = page_footer.add_run()
-    run._r.append(parse_xml(fldStart))
-    run.font.size = Pt(9)
-    run.font.color.rgb = RGBColor(0, 0, 0)
-    run.bold = True
 
 # Add centered title
 title = doc.add_paragraph()
@@ -471,19 +458,22 @@ set_table_borders(combined_table)
 
 # Save the request form document
 docx_request_filename = os.path.join(media_root, f"Request_Form_{site_code}_{request_id}.docx")
-doc.save(docx_request_filename)
+try:
+    doc.save(docx_request_filename)
+except Exception as e:
+    print_and_log(f"Failed to save request form document: {e}")
+    sys.exit(1)
 
 # Convert the request form document to PDF
 pdf_request_filename = os.path.join(media_root, f"Request_Form_{site_code}_{request_id}.pdf")
-with open(os.devnull, 'w') as fnull:
-    sys.stdout = fnull
-    sys.stderr = fnull
-    convert(docx_request_filename, pdf_request_filename)
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+convert_to_pdf(docx_request_filename, pdf_request_filename)
 
 # Delete the request form Word document after conversion
-os.remove(docx_request_filename)
+try:
+    os.remove(docx_request_filename)
+except Exception as e:
+    print_and_log(f"Failed to delete request form document: {e}")
+    sys.exit(1)
 
 # Create the Cover Letter Document
 cover_letter = Document()
@@ -555,22 +545,23 @@ for para in paragraphs:
 
 # Save the cover letter document
 docx_cover_letter_filename = os.path.join(media_root, f"Cover_Letter_{site_code}_{request_id}.docx")
-cover_letter.save(docx_cover_letter_filename)
+try:
+    cover_letter.save(docx_cover_letter_filename)
+except Exception as e:
+    print_and_log(f"Failed to save cover letter document: {e}")
+    sys.exit(1)
 
 # Convert the cover letter document to PDF
 pdf_cover_letter_filename = os.path.join(media_root, f"Cover_Letter_{site_code}_{request_id}.pdf")
-with open(os.devnull, 'w') as fnull:
-    sys.stdout = fnull
-    sys.stderr = fnull
-    convert(docx_cover_letter_filename, pdf_cover_letter_filename)
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+convert_to_pdf(docx_cover_letter_filename, pdf_cover_letter_filename)
 
 # Delete the cover letter Word document after conversion
-os.remove(docx_cover_letter_filename)
+try:
+    os.remove(docx_cover_letter_filename)
+except Exception as e:
+    print_and_log(f"Failed to delete cover letter document: {e}")
+    sys.exit(1)
 
-# Print the request form path
-print(f"media/domain-request/forms/{os.path.basename(pdf_request_filename)}")
-
-# Print the cover letter path
-print(f"media/domain-request/forms/{os.path.basename(pdf_cover_letter_filename)}")
+# Print the final paths of the generated PDF files
+print(f"Request form generated: media/domain-request/forms/{os.path.basename(pdf_request_filename)}")
+print(f"Cover letter generated: media/domain-request/forms/{os.path.basename(pdf_cover_letter_filename)}")
