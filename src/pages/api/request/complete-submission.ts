@@ -70,14 +70,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Define transporter for sending emails
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
+      host: process.env.SMTP_HOST as string,
+      port: Number(process.env.SMTP_PORT),
       secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
       auth: {
-        user: process.env.SMTP_USER, // SMTP username
-        pass: process.env.SMTP_PASS, // SMTP password
+        user: process.env.SMTP_USER as string, // SMTP username
+        pass: process.env.SMTP_PASS as string, // SMTP password
       },
     });
+    
 
     const mailOptions = {
       from: process.env.SMTP_USER,
