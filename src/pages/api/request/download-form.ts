@@ -62,8 +62,8 @@ export default async function downloadForm(req: NextApiRequest, res: NextApiResp
       return res.status(404).json({ success: false, msg: 'file_not_found', data: {} });
     }
 
-    // Normalize the file path
-    filePath = path.join(process.cwd(), 'public', filePath);
+    // Correct the base directory
+    filePath = path.join(process.cwd(), 'src', 'public', filePath);
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ success: false, msg: 'file_not_found_on_server', data: {} });
