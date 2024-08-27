@@ -1,0 +1,83 @@
+.container {
+  padding: 20px;
+}
+
+.title {
+  margin-bottom: 20px;
+}
+
+.domainCard,
+.addedRecord,
+.dnsRecord {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid black;
+  box-shadow: none;
+  background-color: white;
+}
+
+.cardContent {
+  padding: 10px;
+}
+
+.recordDetails {
+  margin-bottom: 10px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.deleteIcon {
+  cursor: pointer;
+  color: red;
+}
+
+.selectType {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.domainHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fqdn {
+  font-weight: bold;
+}
+
+.recordsSection {
+  margin-top: 10px;
+}
+
+.addedRecord {
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.submitButton {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.recordHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+
+.gap {
+  margin-bottom: 10px;
+}

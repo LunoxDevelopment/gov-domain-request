@@ -1,0 +1,109 @@
+.tableContainer {
+  border: 1px solid black;
+  box-shadow: none;
+  background-color: white;
+  margin-bottom: 10px;
+  padding: 0;
+  border-radius: 0;
+}
+
+.gridContainer {
+  border-bottom: 1px solid black;
+}
+
+.gridItem {
+  border-right: 1px solid black;
+  padding: 5px;
+}
+
+.gridItem:last-child {
+  border-right: none;
+}
+
+.listItem {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.listItemText {
+  margin: 0;
+}
+
+.iconCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.smallFont {
+  font-size: 0.875rem;
+}
+
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .smallFont {
+    font-size: 0.75rem;
+  }
+}
+
+.tableContainer {
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.gridContainer {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.gridItem {
+  padding: 8px;
+}
+
+.smallFont {
+  font-size: 0.875rem;
+}
+
+.iconCell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.listItem {
+  padding: 0;
+}
+
+.listItemText {
+  font-size: 0.875rem;
+}
+
+
+
+/* New CSS for transitions */
+.slide-up-enter {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.slide-up-enter-active {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 300ms, opacity 300ms;
+}
+
+.slide-up-exit {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.slide-up-exit-active {
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 300ms, opacity 300ms;
+}

@@ -1,0 +1,56 @@
+.container {
+  width: 100%;
+  padding: 20px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  table-layout: fixed;
+}
+
+.tableCell {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.tableCell:first-child {
+  width: 30%;
+}
+
+.tableCell:nth-child(2) {
+  width: 30%;
+}
+
+.tableCell:nth-child(3) {
+  width: 20%;
+}
+
+.tableCell:nth-child(4),
+.tableCell:last-child {
+  width: 10%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.domainContainer {
+  display: flex;
+  align-items: center;
+}
+
+.fixedSuffix {
+  margin-left: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+}
+
+.submitButton {
+  display: block;
+  margin: 0 auto;
+}

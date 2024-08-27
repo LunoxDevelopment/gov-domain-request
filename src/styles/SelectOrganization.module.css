@@ -1,0 +1,59 @@
+.filterCard {
+  margin-top: 20px;
+}
+
+.filterMenu {
+  width: 100%;
+  padding: 10px;
+}
+
+.filterGroup {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.organizationGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+}
+
+.organizationCard {
+  width: 90%;
+  max-width: 800px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 1px solid;
+  transition: transform 0.2s;
+}
+
+.organizationCard:hover {
+  transform: scale(1.02);
+}
+
+.textField {
+  width: 100%;
+}
+
+.filterContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.filterInput {
+  flex: 1;
+  margin-right: 10px;
+  max-width: 800px;
+}
+
+@media (min-width: 600px) {
+  .filterMenu {
+    width: 100%;
+  }
+}

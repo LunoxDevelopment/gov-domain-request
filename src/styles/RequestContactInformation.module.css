@@ -1,0 +1,41 @@
+.container {
+  width: 100%;
+  padding: 20px;
+}
+
+.submitButton {
+  margin-top: 20px;
+}
+
+.tooltipIcon {
+  margin-left: 5px;
+  vertical-align: middle;
+  font-size: small;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableCell {
+  border: 1px solid #ddd;
+  padding: 8px;
+  height: 50px;
+}
+
+.tableHeaderCell {
+  font-weight: bold;
+  border: 1px solid #ddd;
+  padding: 8px;
+  background-color: #f2f2f2;
+  height: 50px;
+}
+
+.roleLabel {
+  font-weight: bold;
+}
+
+.roleColumn {
+  width: 20%;
+}

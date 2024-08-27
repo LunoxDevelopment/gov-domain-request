@@ -1,0 +1,266 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model request {
+  id                        Int       @id @default(autoincrement())
+  request_token             String    @unique
+  org_site_code             String
+  created_at                DateTime? @default(now())
+  request_reason            String?
+  request_status_id         Int?
+  owner_user_id             Int?
+  administrator_user_id     Int?
+  technical_user_id         Int?
+  content_developer_user_id Int?
+  hosting_coordinator_user_id Int?
+  hosting_place             String?
+  address                   String?
+  email                     String?
+  contact_no                Int?
+  request_form_path         String?
+  cover_letter_path         String?
+  uploaded_request_form_path String?
+  uploaded_cover_letter_path String?
+
+  request_status  request_status? @relation(fields: [request_status_id], references: [id])
+  user_owner      user?           @relation("Owner", fields: [owner_user_id], references: [id])
+  user_admin      user?           @relation("Admin", fields: [administrator_user_id], references: [id])
+  user_technical  user?           @relation("Technical", fields: [technical_user_id], references: [id])
+  user_content    user?           @relation("Content", fields: [content_developer_user_id], references: [id])
+  user_hosting    user?           @relation("Hosting", fields: [hosting_coordinator_user_id], references: [id])
+
+  request_domain  request_domain[]
+}
+
+
+model user {
+  id                          Int      @id @default(autoincrement())
+  full_name                   String
+  nic                         String?
+  mobile                      Int?
+  email                       String?
+  employee                    Boolean?
+  designation                 String?
+
+  request_owner               request[] @relation("Owner")
+  request_admin               request[] @relation("Admin")
+  request_technical           request[] @relation("Technical")
+  request_content             request[] @relation("Content")
+  request_hosting             request[] @relation("Hosting")
+
+  auth_user                   auth_user?
+  user_group                  user_group[]
+}
+
+model auth_user {
+  id                          Int      @id @default(autoincrement())
+  user_id                     Int      @unique
+  username                    String   @unique
+  password                    String
+
+  user                        user     @relation(fields: [user_id], references: [id])
+}
+
+model group {
+  id                          Int      @id @default(autoincrement())
+  name                        String   @unique
+  description                 String?
+
+  user_group                  user_group[]
+  group_permission            group_permission[]
+}
+
+model user_group {
+  id                          Int      @id @default(autoincrement())
+  user_id                     Int
+  group_id                    Int
+
+  user                        user     @relation(fields: [user_id], references: [id])
+  group                       group    @relation(fields: [group_id], references: [id])
+}
+
+model permission {
+  id                          Int      @id @default(autoincrement())
+  uid                         String   @unique
+  name                        String   @unique
+  description                 String?
+
+  group_permission            group_permission[]
+}
+
+
+model group_permission {
+  id                          Int      @id @default(autoincrement())
+  permission_id               Int
+  group_id                    Int
+
+  permission                  permission @relation(fields: [permission_id], references: [id])
+  group                       group      @relation(fields: [group_id], references: [id])
+}
+
+
+
+model request_status {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  level       Int?
+  progress    String?
+
+  request     request[]
+}
+
+model request_domain {
+  id          Int       @id @default(autoincrement())
+  request_id  Int
+  domain_id   Int
+  reason      String
+  type        String
+  include_www Boolean
+
+  request     request            @relation(fields: [request_id], references: [id])
+  domain      domain             @relation(fields: [domain_id], references: [id])
+  request_dns_record request_dns_record[]
+}
+
+model domain {
+  id                Int        @id @default(autoincrement())
+  domain_name       String
+  parent_domain_id  Int?
+
+  request_domain    request_domain[]
+  verified_dns_record verified_dns_record[]
+  parentDomain      domain?     @relation("SubDomain", fields: [parent_domain_id], references: [id])
+  subdomains        domain[]    @relation("SubDomain")
+}
+
+model request_dns_record {
+  id               Int  @id @default(autoincrement())
+  request_domain_id Int
+  dns_record_id    Int
+
+  request_domain request_domain @relation(fields: [request_domain_id], references: [id])
+  dns_record     dns_record     @relation(fields: [dns_record_id], references: [id], name: "RequestDnsRecord")
+}
+
+model verified_dns_record {
+  id           Int  @id @default(autoincrement())
+  domain_id    Int
+  dns_record_id Int
+
+  domain       domain       @relation(fields: [domain_id], references: [id])
+  dns_record   dns_record   @relation(fields: [dns_record_id], references: [id], name: "VerifiedDnsRecord")
+}
+
+model dns_record {
+  id                  Int  @id @default(autoincrement())
+  dns_type_id         Int
+  dns_record_id       Int
+
+  dns_type            dns_type              @relation(fields: [dns_type_id], references: [id])
+  request_dns_records request_dns_record[]  @relation("RequestDnsRecord")
+  verified_dns_records verified_dns_record[] @relation("VerifiedDnsRecord")
+}
+
+
+model dns_type {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String?
+  table_name  String
+  tip         String?
+  warn        String?
+
+  dns_record dns_record[]
+}
+
+
+model dns_a_record {
+  id    Int    @id @default(autoincrement())
+  ttl   Int?
+  value String
+}
+
+model dns_aaaa_record {
+  id    Int    @id @default(autoincrement())
+  ttl   Int?
+  value String
+}
+
+model dns_cname_record {
+  id    Int    @id @default(autoincrement())
+  ttl   Int?
+  value String
+}
+
+model dns_txt_record {
+  id    Int    @id @default(autoincrement())
+  ttl   Int?
+  value String
+}
+
+model dns_ptr_record {
+  id    Int    @id @default(autoincrement())
+  ttl   Int?
+  value String
+}
+
+model dns_ns_record {
+  id    Int    @id @default(autoincrement())
+  ttl   Int?
+  value String
+}
+
+model dns_mx_record {
+  id       Int    @id @default(autoincrement())
+  ttl      Int?
+  value    String
+  priority Int?
+}
+
+model dns_soa_record {
+  id      Int    @id @default(autoincrement())
+  ttl     Int?
+  m_name  String
+  r_name  String
+  serial  Int
+  refresh Int
+  retry   Int
+  expire  Int
+  min_ttl Int
+}
+
+model cca_record {
+  id    Int    @id @default(autoincrement())
+  ttl   Int?
+  flag  Int
+  tag   String
+  value String
+}
+
+model dns_srv_record {
+  id      Int    @id @default(autoincrement())
+  service String
+  ttl     Int?
+  weight  Int
+  port    Int
+  target  String
+}
+
+
+model dns_other_record {
+  id      Int    @id @default(autoincrement())
+  content String
+}
