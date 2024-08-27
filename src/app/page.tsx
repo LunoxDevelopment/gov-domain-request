@@ -1,12 +1,11 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useState } from 'react';
-import Link from 'next/link';
+import './home.css'; // Ensure this import is present
 
-// Define a type for the language options
 type Language = 'en' | 'si' | 'ta';
 
-// Define the structure of the hero text and card data
 const heroText: Record<Language, string> = {
   en: 'GovLK Domain Registration',
   si: 'GovLK වසම් ලියාපදිංචි කිරීමේ ඉල්ලීම',
@@ -21,7 +20,7 @@ type CardData = {
 
 const cardData: Record<Language, CardData[]> = {
   en: [
-    { title: 'Pre-Requirements', description: 'Review the necessary pre-requisites before applying.', link: '/instructions/reqirements' },
+    { title: 'Requirements', description: 'Review the necessary pre-requisites before applying.', link: '/instructions/reqirements' },
     { title: 'Instructions', description: 'Follow the detailed instructions to get started.', link: '/instructions/get-started' },
     { title: 'Form Upload', description: 'Upload your completed domain registration form here.', link: '/domain/upload-form' },
     { title: 'Support', description: 'Need help? Contact our support team for assistance.', link: '/support' },
@@ -41,53 +40,80 @@ const cardData: Record<Language, CardData[]> = {
 };
 
 export default function HomePage() {
-  const [language, setLanguage] = useState<Language>('en'); // Ensure language is of type 'Language'
+  const [language, setLanguage] = useState<Language>('en');
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-lg font-bold">GovLK Domain Registration</div>
-          <div className="space-x-4">
-            <button
-              onClick={() => setLanguage('en')}
-              className={`text-sm font-medium ${language === 'en' ? 'text-blue-600' : 'text-gray-600'}`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => setLanguage('si')}
-              className={`text-sm font-medium ${language === 'si' ? 'text-blue-600' : 'text-gray-600'}`}
-            >
-              සිංහල
-            </button>
-            <button
-              onClick={() => setLanguage('ta')}
-              className={`text-sm font-medium ${language === 'ta' ? 'text-blue-600' : 'text-gray-600'}`}
-            >
-              தமிழ்
-            </button>
-          </div>
-        </div>
-      </nav>
+    <main className="relative flex min-h-screen flex-col items-center justify-center p-24">
+      <div className="fixed top-0 right-0 m-4">
+        <a
+          className="flex place-items-center gap-2"
+          href="https://icta.lk/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Powered by{" "}
+          <Image
+            src="/icta.jpg"
+            alt="ICTA Logo"
+            width={200} // Adjust width as needed
+            height={86} // Calculated from original ratio (3833 x 1648)
+            priority
+          />
+        </a>
+      </div>
 
-      {/* Hero Section */}
-      <section className="text-center py-20 bg-gradient-to-r from-blue-500 to-indigo-600">
+      <div className="language-selector">
+        <button
+          onClick={() => setLanguage('en')}
+          className={`text-sm font-medium ${language === 'en' ? 'active' : ''}`}
+        >
+          English
+        </button>
+        <button
+          onClick={() => setLanguage('si')}
+          className={`text-sm font-medium ${language === 'si' ? 'active' : ''}`}
+        >
+          සිංහල
+        </button>
+        <button
+          onClick={() => setLanguage('ta')}
+          className={`text-sm font-medium ${language === 'ta' ? 'active' : ''}`}
+        >
+          தமிழ்
+        </button>
+      </div>
+
+      <div className="hero">
         <h1 className="text-5xl font-bold animate-text-gradient">
           {heroText[language]}
         </h1>
-      </section>
+        <a
+          href="/domain-request"
+          className="mt-8 inline-block rounded-lg bg-blue-600 px-6 py-3 text-xl font-semibold text-white transition-colors hover:bg-blue-700"
+        >
+          Get Started
+        </a>
+      </div>
 
-      {/* Cards Section */}
-      <section className="container mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="cards">
         {cardData[language].map((card, index) => (
-          <Link key={index} href={card.link} className="block bg-white shadow-lg rounded-lg p-6 hover:shadow-2xl transition-shadow duration-300">
-            <h2 className="text-xl font-bold mb-2">{card.title}</h2>
-            <p className="text-gray-600">{card.description}</p>
-          </Link>
+          <a
+            key={index}
+            href={card.link}
+            className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          >
+            <h2 className="mb-3 text-2xl font-semibold">
+              {card.title}{" "}
+              <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                -&gt;
+              </span>
+            </h2>
+            <p className="m-0 max-w-[30ch] text-sm opacity-50">
+              {card.description}
+            </p>
+          </a>
         ))}
-      </section>
-    </div>
+      </div>
+    </main>
   );
 }
