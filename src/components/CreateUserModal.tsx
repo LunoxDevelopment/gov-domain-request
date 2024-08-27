@@ -105,14 +105,15 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ visible, onClose, fie
       }
     }
   
-    // Add validation for designation
-    if (fields.designation && !formValues.designation.trim()) {
+    // Add validation for designation with default value
+    if (fields.designation && !formValues.designation?.trim()) {
       errors.designation = 'Designation is required';
     }
   
     setErrorMessages(errors);
     return Object.keys(errors).length === 0;
   };
+  
   
 
   const handleFinish = async () => {
