@@ -7,7 +7,7 @@ import './home.css'; // Ensure this import is present
 type Language = 'en' | 'si' | 'ta';
 
 const heroText: Record<Language, string> = {
-  en: 'GovLK Domain Registration',
+  en: 'GovLK Domain Registration Request',
   si: 'GovLK වසම් ලියාපදිංචි කිරීමේ ඉල්ලීම',
   ta: 'GovLK டொமைன் பதிவு',
 };
