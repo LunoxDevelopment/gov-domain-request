@@ -79,8 +79,9 @@ export default async function generateForms(req: NextApiRequest, res: NextApiRes
       });
     }
 
-    const scriptPath = path.join(process.cwd(), 'utils', 'generate_domain_request_forms.py');
+    const scriptPath = path.join(process.cwd(), 'src', 'utils', 'generate_domain_request_forms.py');
     const command = `python3 "${scriptPath}" -t ${requestToken}`;
+    
 
 
     // Execute the Python script
