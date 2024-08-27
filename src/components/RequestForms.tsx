@@ -20,7 +20,7 @@ const RequestForms: React.FC<RequestFormsProps> = ({ requestData }) => {
   if (!requestData) return null;
 
   const handleCopyClick = () => {
-    navigator.clipboard.writeText(`https://registar.gov.lk/domain/upload-form/${requestData.token}`);
+    navigator.clipboard.writeText(`https://registrar.gov.lk/domain/upload-form/${requestData.token}`);
   };
 
   return (
@@ -32,7 +32,7 @@ const RequestForms: React.FC<RequestFormsProps> = ({ requestData }) => {
           </Typography>
           <TextField
             variant="outlined"
-            value={`https://registar.gov.lk/domain/upload-form/${requestData.token}`}
+            value={`https://registrar.gov.lk/domain/upload-form/${requestData.token}`}
             InputProps={{
               readOnly: true,
               endAdornment: (
