@@ -86,28 +86,34 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ visible, onClose, fie
 
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
-
+  
     if (!formValues.fullName.trim()) {
       errors.fullName = 'Full Name is required';
     }
-
+  
     if (fields.email && formValues.email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formValues.email)) {
         errors.email = 'Invalid email format';
       }
     }
-
+  
     if (fields.auth) {
       if (!formValues.password || formValues.password !== formValues.confirmPassword) {
         errors.password = 'Passwords do not match';
         errors.confirmPassword = 'Passwords do not match';
       }
     }
-
+  
+    // Add validation for designation
+    if (fields.designation && !formValues.designation.trim()) {
+      errors.designation = 'Designation is required';
+    }
+  
     setErrorMessages(errors);
     return Object.keys(errors).length === 0;
   };
+  
 
   const handleFinish = async () => {
     if (!validateForm()) return;
