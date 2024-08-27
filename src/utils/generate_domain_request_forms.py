@@ -17,10 +17,18 @@ def print_and_log(message):
 
 def convert_to_pdf(docx_path, pdf_path):
     try:
-        subprocess.run(['libreoffice', '--headless', '--convert-to', 'pdf', '--outdir', os.path.dirname(pdf_path), docx_path], check=True)
+        # Redirect stdout and stderr to /dev/null to suppress output
+        with open(os.devnull, 'w') as devnull:
+            subprocess.run(
+                ['libreoffice', '--headless', '--convert-to', 'pdf', '--outdir', os.path.dirname(pdf_path), docx_path],
+                check=True,
+                stdout=devnull,  # Suppress standard output
+                stderr=devnull   # Suppress standard error
+            )
     except subprocess.CalledProcessError as e:
         print_and_log(f"Failed to convert {docx_path} to PDF: {e}")
         sys.exit(1)
+
 
 # Load environment variables from .env file
 load_dotenv()
