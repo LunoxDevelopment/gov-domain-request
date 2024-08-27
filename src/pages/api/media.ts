@@ -10,13 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  // Define the base directory as the public/media directory within the application root
+  // Define the base directory correctly
   const baseDirectory = join(process.cwd(), 'src', 'public', 'media');
 
   // Construct the full file path relative to the application root
   const filePath = join(baseDirectory, ...path.split('/'));
-
-  console.log('Resolved file path:', filePath); // Log the resolved file path for debugging
 
   try {
     const file = await fs.readFile(filePath);
