@@ -20,12 +20,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Fetch request details including uploaded documents
+    // Fetch request details
     const request = await prisma.request.findUnique({
       where: { request_token },
-      include: {
-        documents: true, // Assuming there's a documents model related to requests
-      },
     });
 
     if (!request) {
@@ -33,15 +30,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Check if both cover letter and request letter are uploaded
-    const coverLetter = request.documents.find(doc => doc.type === 'cover_letter');
-    const requestLetter = request.documents.find(doc => doc.type === 'request_letter');
+    const coverLetterPath = request.uploaded_cover_letter_path || request.cover_letter_path;
+    const requestFormPath = request.uploaded_request_form_path || request.request_form_path;
 
-    if (!coverLetter || !requestLetter) {
-      return res.status(400).json({ success: false, msg: 'Both cover letter and request letter must be uploaded' });
+    if (!coverLetterPath || !requestFormPath) {
+      return res.status(400).json({ success: false, msg: 'Both cover letter and request form must be uploaded' });
     }
 
     // Update the request status to "Uploaded Forms"
-    const uploadedFormsStatus = await prisma.request_status.findUnique({
+    const uploadedFormsStatus = await prisma.request_status.findFirst({
       where: { name: 'Uploaded Forms' },
     });
 
@@ -54,8 +51,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data: { request_status_id: uploadedFormsStatus.id },
     });
 
-    // Fetch summary details using a relative URL
-    const summaryResponse = await fetch(`/api/request/get-summary?requestToken=${request_token}`);
+    // Fetch summary details using the GOV_LK_HOST environment variable
+    const summaryResponse = await fetch(`${process.env.GOV_LK_HOST}/api/request/get-summary?requestToken=${request_token}`);
     const summaryData = await summaryResponse.json();
     if (!summaryData.success) {
       throw new Error('Failed to retrieve request summary');
@@ -63,34 +60,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const summary = summaryData.data;
 
-    // Prepare email details
+    // Define upload directories
+    const coverLetterDir = path.join(process.cwd(), 'public', 'media', 'domain-request', 'uploads', 'cover-letter');
+    const requestFormDir = path.join(process.cwd(), 'public', 'media', 'domain-request', 'uploads', 'request-form');
+
+    // Prepare file paths and attachment names
+    const coverLetterAbsolutePath = path.join(coverLetterDir, path.basename(coverLetterPath));
+    const requestFormAbsolutePath = path.join(requestFormDir, path.basename(requestFormPath));
+
+    // Define transporter for sending emails
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
-      secure: process.env.SMTP_SECURE === 'true',
+      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: process.env.SMTP_USER, // SMTP username
+        pass: process.env.SMTP_PASS, // SMTP password
       },
     });
 
-    // Assuming the document file paths are stored in the database as `filepath`
-    const coverLetterPath = path.join(process.cwd(), 'src', coverLetter.filepath);
-    const requestLetterPath = path.join(process.cwd(), 'src', requestLetter.filepath);
-
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: 'helpdesk.noc.gov.lk',
+      to: process.env.UPLOAD_NOTIFY_EMAIL,  // Use the email from .env
       subject: `Domain Request - ${summary.organization_name} - ${summary.requested_domains.map(domain => domain.fqdn).join(', ')}`,
-      text: `Organization Name: ${summary.organization_name}\nDomains Requesting: ${summary.requested_domains.map(domain => domain.fqdn).join(', ')}\nResource Records: ${summary.requested_domains.map(domain => `Domain: ${domain.fqdn}, DNS: ${domain.dns_records.map(record => `${record.type} - ${record.value}`).join(', ')}`).join('\n')}\nAdministrative Contact Information:\nName: ${summary.administrator.full_name}\nDesignation: ${summary.administrator.designation}\nEmail: ${summary.administrator.email}\nMobile: ${summary.administrator.mobile}`,
+      text: `Organization Name: ${summary.organization_name}\nDomains Requesting:\n${summary.requested_domains.map(domain => `- ${domain.fqdn}`).join('\n')}\nResource Records:\n${summary.requested_domains.map(domain => `Domain: ${domain.fqdn}\n${domain.dns_records.map(record => `  • ${record.type}: ${record.value}`).join('\n')}`).join('\n\n')}\nAdministrative Contact Information:\nName: ${summary.administrator.full_name}\nDesignation: ${summary.administrator.designation}\nEmail: ${summary.administrator.email}\nMobile: ${summary.administrator.mobile}`,
       attachments: [
         {
-          filename: path.basename(coverLetter.filepath),
-          path: coverLetterPath,
+          filename: `Cover_Letter_${path.basename(coverLetterPath)}`,
+          path: coverLetterAbsolutePath,
         },
         {
-          filename: path.basename(requestLetter.filepath),
-          path: requestLetterPath,
+          filename: `Request_Form_${path.basename(requestFormPath)}`,
+          path: requestFormAbsolutePath,
         },
       ],
     };
