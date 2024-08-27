@@ -571,5 +571,5 @@ except Exception as e:
     sys.exit(1)
 
 # Print the final paths of the generated PDF files
-print(f"Request form generated: media/domain-request/forms/{os.path.basename(pdf_request_filename)}")
-print(f"Cover letter generated: media/domain-request/forms/{os.path.basename(pdf_cover_letter_filename)}")
+print(f"media/domain-request/forms/{os.path.basename(pdf_request_filename)}")
+print(f"media/domain-request/forms/{os.path.basename(pdf_cover_letter_filename)}")
