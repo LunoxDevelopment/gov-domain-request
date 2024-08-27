@@ -8,6 +8,25 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 
+interface RequestedDomain {
+  fqdn: string;
+  dns_records: Array<{
+    type: string;
+    value: string;
+  }>;
+}
+
+interface Summary {
+  organization_name: string;
+  requested_domains: RequestedDomain[];
+  administrator: {
+    full_name: string;
+    designation: string;
+    email: string;
+    mobile: string;
+  };
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, msg: 'Method not allowed' });
@@ -58,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new Error('Failed to retrieve request summary');
     }
 
-    const summary = summaryData.data;
+    const summary: Summary = summaryData.data;
 
     // Define upload directories
     const coverLetterDir = path.join(process.cwd(), 'public', 'media', 'domain-request', 'uploads', 'cover-letter');
@@ -78,13 +97,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         pass: process.env.SMTP_PASS as string, // SMTP password
       },
     });
-    
 
     const mailOptions = {
       from: process.env.SMTP_USER,
       to: process.env.UPLOAD_NOTIFY_EMAIL,  // Use the email from .env
-      subject: `Domain Request - ${summary.organization_name} - ${summary.requested_domains.map(domain => domain.fqdn).join(', ')}`,
-      text: `Organization Name: ${summary.organization_name}\nDomains Requesting:\n${summary.requested_domains.map(domain => `- ${domain.fqdn}`).join('\n')}\nResource Records:\n${summary.requested_domains.map(domain => `Domain: ${domain.fqdn}\n${domain.dns_records.map(record => `  • ${record.type}: ${record.value}`).join('\n')}`).join('\n\n')}\nAdministrative Contact Information:\nName: ${summary.administrator.full_name}\nDesignation: ${summary.administrator.designation}\nEmail: ${summary.administrator.email}\nMobile: ${summary.administrator.mobile}`,
+      subject: `Domain Request - ${summary.organization_name} - ${summary.requested_domains.map((domain: RequestedDomain) => domain.fqdn).join(', ')}`,
+      text: `Organization Name: ${summary.organization_name}
+Domains Requesting:
+${summary.requested_domains.map((domain: RequestedDomain) => `- ${domain.fqdn}`).join('\n')}
+Resource Records:
+${summary.requested_domains.map((domain: RequestedDomain) => `Domain: ${domain.fqdn}
+${domain.dns_records.map(record => `  • ${record.type}: ${record.value}`).join('\n')}`).join('\n\n')}
+Administrative Contact Information:
+Name: ${summary.administrator.full_name}
+Designation: ${summary.administrator.designation}
+Email: ${summary.administrator.email}
+Mobile: ${summary.administrator.mobile}`,
       attachments: [
         {
           filename: `Cover_Letter_${path.basename(coverLetterPath)}`,
