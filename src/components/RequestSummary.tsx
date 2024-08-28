@@ -98,19 +98,22 @@ const RequestSummary: React.FC<RequestSummaryProps> = ({ summaryData }) => {
           </Grid>
           <Grid item xs={8} className={`${styles.gridItem} ${styles.smallFont}`}>
             <List>
-              {Object.entries(record).map(([key, value]) => (
-                value && key !== 'type' && (
-                  <ListItem key={key} className={styles.listItem}>
-                    <ListItemText primary={`${key.replace('_', ' ')} - ${value}`} className={styles.listItemText} />
-                  </ListItem>
-                )
-              ))}
+              {Object.entries(record)
+                .filter(([key]) => key !== 'type_record_id' && key !== 'dns_record_id') // Exclude these keys
+                .map(([key, value]) => (
+                  value && key !== 'type' && (
+                    <ListItem key={key} className={styles.listItem}>
+                      <ListItemText primary={`${key.replace('_', ' ')} - ${value}`} className={styles.listItemText} />
+                    </ListItem>
+                  )
+                ))}
             </List>
           </Grid>
         </Grid>
       ))}
     </Paper>
   );
+  
 
   return (
     <div>
