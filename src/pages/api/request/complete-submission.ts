@@ -96,11 +96,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         user: process.env.SMTP_USER as string, // SMTP username
         pass: process.env.SMTP_PASS as string, // SMTP password
       },
+      requireTLS: process.env.SMTP_REQUIRE_TLS === 'true', // Use STARTTLS if required
+      tls: {
+        rejectUnauthorized: process.env.SMTP_TLS_REJECT_UNAUTHORIZED === 'true', // Disable or enable TLS certificate verification
+      },
     });
 
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: process.env.UPLOAD_NOTIFY_EMAIL,  // Use the email from .env
+      to: process.env.UPLOAD_NOTIFY_EMAIL,
       subject: `Domain Request - ${summary.organization_name} - ${summary.requested_domains.map((domain: RequestedDomain) => domain.fqdn).join(', ')}`,
       text: `Organization Name: ${summary.organization_name}
 Domains Requesting:
