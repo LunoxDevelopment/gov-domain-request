@@ -20,22 +20,22 @@ type CardData = {
 
 const cardData: Record<Language, CardData[]> = {
   en: [
-    { title: 'Requirements', description: 'Review the necessary pre-requisites before applying.', link: '/instructions/reqirements' },
-    { title: 'Instructions', description: 'Follow the detailed instructions to get started.', link: '/instructions/get-started' },
+    { title: 'Requirements', description: 'Review the necessary pre-requisites before applying.', link: 'https://docs.registrar.gov.lk/docs/instructions/pre-reqirements' },
+    { title: 'Instructions', description: 'Follow the detailed instructions to get started.', link: 'https://docs.registrar.gov.lk/docs/instructions/get-started' },
     { title: 'Form Upload', description: 'Upload your completed domain registration form here.', link: '/domain/upload-form' },
-    { title: 'Support', description: 'Need help? Contact our support team for assistance.', link: '/support' },
+    { title: 'Support', description: 'Need help? Contact our support team for assistance.', link: 'https://docs.registrar.gov.lk/docs/support' },
   ],
   si: [
-    { title: 'පූර්ව අවශ්‍යතා', description: 'අයදුම් කිරීමේදී අවශ්‍ය පෙර ඇරයුම් ඉදිරියට.', link: '/instructions/reqirements' },
-    { title: 'උපදෙස්', description: 'ඉදිරියට යාමට විස්තරාත්මක උපදෙස් අනුගමනය කරන්න.', link: '/instructions/get-started' },
+    { title: 'පූර්ව අවශ්‍යතා', description: 'අයදුම් කිරීමේදී අවශ්‍ය පෙර ඇරයුම් ඉදිරියට.', link: 'https://docs.registrar.gov.lk/docs/instructions/pre-reqirements' },
+    { title: 'උපදෙස්', description: 'ඉදිරියට යාමට විස්තරාත්මක උපදෙස් අනුගමනය කරන්න.', link: 'https://docs.registrar.gov.lk/docs/instructions/get-started' },
     { title: 'පෝරම උඩුගත කිරීම', description: 'ඔබේ සම්පූර්ණ වූ වසම් ලියාපදිංචි පෝරමය මෙහි උඩුගත කරන්න.', link: '/domain/upload-form' },
-    { title: 'සහාය', description: 'උදව් අවශ්‍යද? සහාය සඳහා අපගේ කණ්ඩායම සම්බන්ධ කරන්න.', link: '/support' },
+    { title: 'සහාය', description: 'උදව් අවශ්‍යද? සහාය සඳහා අපගේ කණ්ඩායම සම්බන්ධ කරන්න.', link: 'https://docs.registrar.gov.lk/docs/support' },
   ],
   ta: [
-    { title: 'முன் தேவைகள்', description: 'விண்ணப்பிப்பதற்கு முன் தேவையான முன்பாடுகளை மதிப்பீடு செய்யவும்.', link: '/instructions/reqirements' },
-    { title: 'வழிமுறைகள்', description: 'தொடங்குவதற்கான விரிவான வழிமுறைகளைப் பின்பற்றவும்.', link: '/instructions/get-started' },
+    { title: 'முன் தேவைகள்', description: 'விண்ணப்பிப்பதற்கு முன் தேவையான முன்பாடுகளை மதிப்பீடு செய்யவும்.', link: 'https://docs.registrar.gov.lk/docs/instructions/pre-reqirements' },
+    { title: 'வழிமுறைகள்', description: 'தொடங்குவதற்கான விரிவான வழிமுறைகளைப் பின்பற்றவும்.', link: 'https://docs.registrar.gov.lk/docs/instructions/get-started' },
     { title: 'படிவம் பதிவேற்றம்', description: 'உங்கள் முடிக்கப்பட்ட டொமைன் பதிவு படிவத்தை இங்கு பதிவேற்றவும்.', link: '/domain/upload-form' },
-    { title: 'ஆதரவு', description: 'உதவி தேவைபடுகிறதா? உதவிக்காக எங்கள் குழுவைத் தொடர்பு கொள்ளவும்.', link: '/support' },
+    { title: 'ஆதரவு', description: 'உதவி தேவைபடுகிறதா? உதவிக்காக எங்கள் குழுவைத் தொடர்பு கொள்ளவும்.', link: 'https://docs.registrar.gov.lk/docs/support' },
   ],
 };
 
